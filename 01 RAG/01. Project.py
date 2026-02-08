@@ -23,11 +23,22 @@ def load_knowledge_base(knowledge_dir: str = "knowledge") -> dict:
     print("STEP 1: Loading documents from files")
     print("="*70)
 
+    knowledge_base = {}
+    knowledge_path = Path(__file__).parent / knowledge_dir
+
+    if not knowledge_path.exists():
+        print(f'Error: knowledge directory not found: {knowledge_path}')
+        return knowledge_base
+    
+    for file_path in knowledge_path.glob('*.md'):
+        doc_id = file_path.stem
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            knowledge_base[doc_id] = content
+        
+        print(f"Loaded {doc_id} ({len(content)} characters)")
 
     return knowledge_base
-
-
-
 
 def get_embedding(text: str, model: str = "text-embedding-3-small") -> list:
 
