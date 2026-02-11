@@ -147,8 +147,24 @@ def main():
     print("RAG Assistant - Semantic Search with Embeddings")
     print("=" * 70)
 
+    # Step 1: Load documents
+    knowledge_base = load_knowledge_base("knowledge")
+
+    # Step 2: Creating embedding
+    embeddings_cache = create_embeddings_cache(knowledge_base)
+
+    # Ask question
+    questions = [
+        "What is remote work policy",
+        "How much does Nexus Cloud Platform cost?",
+        "What health benefits do employees get?"
+    ]
+
+    for question in questions:
+        answer = rag_query(question, knowledge_base, embeddings_cache)
+        print(f"\n{'='*70}")
+        print(f"ANSWER: {answer}")
+        print(f"{'='*70}\n")
 
 if __name__ == "__main__":
     main()
-
-
