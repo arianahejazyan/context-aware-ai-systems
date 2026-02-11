@@ -103,8 +103,41 @@ def semantic_search(query: str, knowledge_base: dict, embeddings_cache: dict, to
 
 def rag_query(user_question, knowledge_base, embeddings_cache):
 
-    return response.choices[0].message.content
+    # Step 1: Search for relevant documents
+    relevant_docs = semantic_search(user_question, knowledge_base, embeddings_cache)
 
+    if not relevant_docs:
+        return "I don't have information about that in the knowledgebase"
+
+    # Step 2: Build context from retrieved documents
+    context_parts = []
+    for doc_id, content, similarity in relevant_docs:
+        context_parts.append(f"[Document: {doc_id}]\n{content}")
+
+    context = "\n\n---\n\n".join(context_parts)
+
+    # Step 3: Context augmentation
+    prompt = f""" Answer the question based only on provided documents.
+
+    context:
+    {context}
+
+    question: {user_question} 
+    
+    Answer:"""
+
+    # Step 4: Generate answer
+    response = client.chat.completions.create(
+        model="mistralai/Mistral-7B-Instruct-v0.3",
+        messages=[
+            {"role": "system", "content": "You are helpful assistant"},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7,
+        max_tokens=300
+    )
+
+    return response.choices[0].message.content
 
 def main():
     """
