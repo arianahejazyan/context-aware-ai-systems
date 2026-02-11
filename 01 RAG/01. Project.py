@@ -8,12 +8,13 @@ from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
 import numpy as np
+from huggingface_hub import InferenceClient
 
 # Load environment variables
 load_dotenv()
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("HUGGING_FACE_API_KEY"))
+client = InferenceClient(token=os.getenv("HUGGING_FACE_API_KEY"))
 
 def load_knowledge_base(knowledge_dir: str = "knowledge") -> dict:
     """
@@ -40,11 +41,10 @@ def load_knowledge_base(knowledge_dir: str = "knowledge") -> dict:
 
     return knowledge_base
 
-def get_embedding(text: str, model: str = "text-embedding-3-small") -> list:
-
-    return response.data[0].embedding
-
-
+def get_embedding(text: str, model: str = "sentence-transformers/all-MiniLM-L6-v2") -> list:
+    text = text.replace("\n", " ")
+    response = client.feature_extraction(text, model=model)
+    return response
 
 def cosine_similarity(vec1: list, vec2: list) -> float:
 
