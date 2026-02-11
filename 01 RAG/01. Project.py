@@ -66,11 +66,19 @@ def create_embeddings_cache(knowledge_base: dict) -> dict:
     print("\n" + "="*70)
     print("STEP 2: Creating embeddings for all documents")
     print("="*70)
-    print("Converting each document to a 1536-dimensional vector...\n")
+    print("Converting each document to a n-dimensional vector...\n")
 
+    embeddings_cache = {}
+
+    for doc_id, content in knowledge_base.items():
+        print(f" Creating embedding for: {doc_id} ...")
+        embedding = get_embedding(content)
+        embeddings_cache[doc_id] = embedding
+        print(f" > Vector length {len(embedding)} dimensions")
+
+    print(f"\n Created {(len(embeddings_cache))} embeddings (cache in memory)")
 
     return embeddings_cache
-
 
 def semantic_search(query: str, knowledge_base: dict, embeddings_cache: dict, top_k: int = 2) -> list:
 
