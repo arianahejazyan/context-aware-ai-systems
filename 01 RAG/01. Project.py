@@ -48,10 +48,18 @@ def get_embedding(text: str, model: str = "sentence-transformers/all-MiniLM-L6-v
 
 def cosine_similarity(vec1: list, vec2: list) -> float:
 
+    a = np.array(vec1)
+    b = np.array(vec2)
+
+    dot_product = np.dot(a, b)
+
+    magnitude_a = np.linalg.norm(a)
+    magnitude_b = np.linalg.norm(b)
+
+    if magnitude_a == 0 or magnitude_b == 0:
+        return 0
     
     return dot_product / (magnitude_a * magnitude_b)
-
-
 
 def create_embeddings_cache(knowledge_base: dict) -> dict:
 
