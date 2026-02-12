@@ -28,9 +28,25 @@ def load_knowledge_base(knowledge_dir: str = "knowledge") -> str:
     print("\n" + "="*70)
     print("STEP 1: Loading Knowledge Base")
     print("="*70)
-    
-    return full_context
 
+    knowledge_parts = []
+    knowledge_path = Path(__file__).parent / knowledge_dir
+
+    if not knowledge_path.exists():
+        print(f"Error: knowledge directory not found: {knowledge_path}")
+        return ""
+    
+    for file_path in sorted(knowledge_path).glob("*.md"):
+        doc_id = file_path.stem
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            knowledge_parts.append(f"=== {doc_id.upper().replace('_', "")} ===\n{content}")
+            print(f"Loaded {doc_id}")
+
+    full_context = "\n\n".join(knowledge_parts)
+    print(f"\nTotal: {len(full_context)} characters combined")
+
+    return full_context
 
 def cag_query(user_question: str, knowledge_context: str) -> str:
     """
