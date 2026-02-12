@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
+from huggingface_hub import InferenceClient
 
 # Load environment variables
 load_dotenv()
