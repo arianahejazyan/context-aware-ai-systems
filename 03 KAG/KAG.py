@@ -168,15 +168,31 @@ def get_facts_from_graph(entity_ids: list, graph_data: dict) -> str:
  
     """
 
-    return "\n".join(facts) if facts else "No specific facts found."
+    facts = []
+    for entity_id in entity_ids:
+        entity_info = graph_data['entities'].get(entity_id,{})
 
+        fact_text = f"\n{entity_id}:\n"
+        for key, value in entity_info.items():
+            if isinstance(value, list):
+                value = ', '.join(map(str, value))
+            fact_text += f' -{key}: {value}\n'
+
+            for rel in graph_data['relationships']:
+                if rel['subject'] == entity_id:
+                    fact_text += f' -{rel['predictate']}: {rel['object']}'
+                elif rel['object'] == entity_id:
+                    fact_text += f' -{rel['object']}: {rel['subject']}'
+
+            facts.append(fact_text)
+
+    return "\n".join(facts) if facts else "No specific facts found."
 
 def get_embedding(text: str) -> list:
     """Get embedding vector (same as RAG)"""
     text = text.replace("\n", " ")
     response = client.embeddings.create(input=[text], model="text-embedding-3-small")
     return response.data[0].embedding
-
 
 def cosine_similarity(vec1: list, vec2: list) -> float:
     """Calculate similarity (same as RAG)"""
@@ -192,7 +208,6 @@ def cosine_similarity(vec1: list, vec2: list) -> float:
     
     return dot_product / (magnitude_a * magnitude_b)
 
-
 def search_documents(query: str, documents: dict, top_k: int = 2) -> list:
     """
     STEP 4: Search documents for relevant text (same as RAG)
@@ -207,7 +222,6 @@ def search_documents(query: str, documents: dict, top_k: int = 2) -> list:
     
     similarities.sort(key=lambda x: x[2], reverse=True)
     return similarities[:top_k]
-
 
 def kag_query(user_question: str, graph_data: dict, documents: dict) -> str:
     """
