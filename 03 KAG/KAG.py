@@ -180,7 +180,7 @@ def get_facts_from_graph(entity_ids: list, graph_data: dict) -> str:
 
             for rel in graph_data['relationships']:
                 if rel['subject'] == entity_id:
-                    fact_text += f' -{rel['predictate']}: {rel['object']}'
+                    fact_text += f' -{rel['predicate']}: {rel['object']}'
                 elif rel['object'] == entity_id:
                     fact_text += f' -{rel['object']}: {rel['subject']}'
 
